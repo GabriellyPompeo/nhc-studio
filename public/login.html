@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NHC Studio — Login</title>
+
+  <!-- Design System & Layout -->
+  <link rel="stylesheet" href="../assets/css/base.css">
+  <link rel="stylesheet" href="../assets/css/layout.css">
+
+  <!-- Componentes -->
+  <link rel="stylesheet" href="../assets/css/buttons.css">
+  <link rel="stylesheet" href="../assets/css/forms.css">
+
+  <!-- Pagina -->
+  <link rel="stylesheet" href="../assets/css/login.css">
+</head>
+<body class="page-login">
+
+  <main class="login-container">
+    <div class="login-card">
+
+      <!-- Logo -->
+      <div class="login-card__logo">
+        <h1 class="login-card__titulo">NHC Studio</h1>
+        <p class="login-card__subtitulo">CRM de Modelos e Castings</p>
+      </div>
+
+      <!-- Formulario de login -->
+      <form id="form-login" class="form" novalidate>
+
+        <!-- Mensagem de erro (oculta por padrao) -->
+        <p id="login-erro" class="form__erro" hidden></p>
+
+        <div class="form__grupo">
+          <label class="form__label" for="email">E-mail</label>
+          <input
+            class="form__input"
+            type="email"
+            id="email"
+            name="email"
+            placeholder="seu@email.com"
+            autocomplete="email"
+            required
+          >
+        </div>
+
+        <div class="form__grupo">
+          <label class="form__label" for="senha">Senha</label>
+          <input
+            class="form__input"
+            type="password"
+            id="senha"
+            name="senha"
+            placeholder="Sua senha"
+            autocomplete="current-password"
+            required
+          >
+        </div>
+
+        <button class="btn btn--primary btn--full" type="submit">
+          Entrar
+        </button>
+
+      </form>
+
+    </div>
+  </main>
+
+  <!-- Controller da pagina de login -->
+  <!-- TODO: substituir autenticacao mock por API real -->
+  <script type="module" src="../assets/js/ui/pages/loginPage.js"></script>
+
+</body>
+</html>
