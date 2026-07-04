@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NHC Model · CRM Interno</title>
+  <meta name="description" content="CRM interno da NHC Model para gestão de modelos, castings e integrações com Dropbox." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-body: #f8f8f6;
+      --bg-card: #ffffff;
+      --bg-sidebar: #1a1a1a;
+      --bg-sidebar-alt: #151515;
+      --border-soft: #e2e0d9;
+      --border-strong: #c9a84c;
+      --text-main: #111111;
+      --text-muted: #6d6b64;
+      --text-soft: #99968c;
+      --accent: #c9a84c;
+      --accent-soft: rgba(201,168,76,.12);
+      --accent-dark: #a78433;
+      --danger: #d9534f;
+      --success: #4caf50;
+      --info: #2f80ed;
+      --warning: #f2994a;
+      --shadow-soft: 0 10px 30px rgba(0,0,0,.04);
+      --shadow-card: 0 18px 40px rgba(0,0,0,.08);
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --radius-xl: 24px;
+      --font-body: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --transition: 200ms cubic-bezier(.16,1,.3,1);
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{font-size:16px;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+    body{font-family:var(--font-body);background:var(--bg-body);color:var(--text-main);line-height:1.6;min-height:100vh;display:flex}
+    img{max-width:100%;display:block}
+    button{font-family:inherit;font-size:inherit;border:none;background:none;cursor:pointer}
+    a{text-decoration:none;color:inherit}
+    ::selection{background:var(--accent-soft);color:var(--accent-dark)}
+    :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+    /* Layout */
+    .layout{display:flex;width:100%;min-height:100vh}
+    .sidebar{width:260px;background:var(--bg-sidebar);color:#f5f5f1;display:flex;flex-direction:column;position:relative;z-index:10}
+    .sidebar-header{padding:1.4rem 1.5rem;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-between}
+    .sidebar-logo{font-weight:600;letter-spacing:.16em;text-transform:uppercase;font-size:.82rem}
+    .sidebar-env{font-size:.7rem;color:var(--accent);letter-spacing:.14em;text-transform:uppercase}
+    .sidebar-nav{flex:1;padding:1.2rem 1rem 1.5rem;display:flex;flex-direction:column;gap:.3rem}
+    .nav-section-label{font-size:.7rem;text-transform:uppercase;letter-spacing:.16em;color:rgba(255,255,255,.35);padding:.75rem 1rem .35rem}
+    .nav-link{display:flex;align-items:center;gap:.75rem;padding:.6rem 1rem;border-radius:var(--radius-sm);font-size:.86rem;color:rgba(255,255,255,.75);transition:background var(--transition),color var(--transition)}
+    .nav-link svg{width:18px;height:18px;flex-shrink:0}
+    .nav-link.active{background:rgba(255,255,255,.08);color:#fff}
+    .nav-link:hover{background:rgba(255,255,255,.04);color:#fff}
+    .sidebar-footer{padding:1rem 1.5rem;border-top:1px solid rgba(255,255,255,.06);font-size:.75rem;color:rgba(255,255,255,.5);display:flex;flex-direction:column;gap:.4rem}
+
+    .sidebar-toggle{display:none;position:absolute;top:.9rem;left:.9rem;width:38px;height:38px;border-radius:999px;border:1px solid rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;background:rgba(26,26,26,.96);color:#fff;z-index:20}
+
+    .main{flex:1;display:flex;flex-direction:column;min-width:0}
+    .topbar{height:60px;background:#fcfbf8;border-bottom:1px solid var(--border-soft);display:flex;align-items:center;justify-content:space-between;padding:0 1.8rem;position:sticky;top:0;z-index:5}
+    .topbar-title{font-size:.9rem;color:var(--text-muted)}
+    .topbar-title strong{color:var(--text-main)}
+    .topbar-meta{font-size:.8rem;color:var(--text-soft);text-align:right}
+    .topbar-meta span{display:block}
+
+    .content{padding:1.8rem;flex:1;min-width:0}
+    .page{display:none}
+    .page.active{display:block}
+
+    .page-header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:1.5rem;gap:1rem}
+    .page-title{font-size:1.3rem;font-weight:600;color:var(--text-main)}
+    .page-sub{font-size:.9rem;color:var(--text-muted)}
+
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;padding:.55rem 1.1rem;border-radius:var(--radius-sm);font-size:.8rem;font-weight:500;border:1px solid transparent;transition:background var(--transition),border-color var(--transition),color var(--transition),box-shadow var(--transition)}
+    .btn-primary{background:var(--accent);border-color:var(--accent);color:#111;box-shadow:0 8px 18px rgba(201,168,76,.3)}
+    .btn-primary:hover{background:var(--accent-dark);border-color:var(--accent-dark)}
+    .btn-ghost{border-color:var(--border-soft);color:var(--text-muted);background:#fcfbf8}
+    .btn-ghost:hover{background:#f1f0ea}
+    .btn-icon{padding:.4rem .75rem}
+
+    .badge{display:inline-flex;align-items:center;justify-content:center;padding:.15rem .55rem;border-radius:999px;font-size:.7rem;font-weight:500;border:1px solid transparent}
+    .badge-new{background:#e1f0ff;color:#1565c0;border-color:#bbdefb}
+    .badge-active{background:#e3f5e7;color:#2f7b3a;border-color:#c2e3c8}
+    .badge-inactive{background:#ececec;color:#666;border-color:#d4d4d4}
+    .badge-rejected{background:#ffe6e4;color:#c0392b;border-color:#ffc3bd}
+
+    .card{background:var(--bg-card);border-radius:var(--radius-md);border:1px solid var(--border-soft);box-shadow:var(--shadow-soft);padding:1.25rem}
+    .card-soft{background:#fcfbf8;border-radius:var(--radius-md);border:1px dashed var(--border-soft);padding:1.2rem}
+
+    .grid-4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1rem;margin-bottom:2rem}
+    .metric-label{font-size:.75rem;color:var(--text-soft);margin-bottom:.4rem;text-transform:uppercase;letter-spacing:.14em}
+    .metric-value{font-size:1.4rem;font-weight:600;color:var(--text-main)}
+    .metric-meta{font-size:.75rem;color:var(--text-muted);margin-top:.25rem}
+
+    table{width:100%;border-collapse:collapse}
+    thead{background:#f3f1eb}
+    th,td{padding:.6rem .75rem;font-size:.8rem;text-align:left}
+    th{font-weight:500;color:var(--text-soft);border-bottom:1px solid var(--border-soft);text-transform:uppercase;letter-spacing:.08em;font-size:.72rem}
+    tbody tr:nth-child(even){background:#fcfbf8}
+    tbody tr:hover{background:#f1f0ea}
+
+    .table-wrapper{margin-top:1rem;border-radius:var(--radius-md);overflow:hidden;border:1px solid var(--border-soft);background:var(--bg-card)}
+    .table-header{display:flex;align-items:center;justify-content:space-between;padding:.75rem .9rem;background:#f3f1eb}
+    .table-header-title{font-size:.8rem;font-weight:500;color:var(--text-muted);text-transform:uppercase;letter-spacing:.12em}
+
+    .chart{margin-top:1.5rem;background:var(--bg-card);border-radius:var(--radius-md);border:1px solid var(--border-soft);padding:1rem 1.2rem}
+    .chart-bars{display:flex;align-items:flex-end;gap:.4rem;height:120px;margin-top:.75rem}
+    .chart-bar{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:.25rem}
+    .chart-bar-rect{width:100%;border-radius:4px 4px 0 0;background:linear-gradient(180deg,var(--accent),var(--accent-dark));transition:height 400ms var(--transition)}
+    .chart-bar-label{font-size:.7rem;color:var(--text-soft)}
+
+    /* Filters */
+    .filters{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:1rem}
+    .input{padding:.45rem .7rem;border-radius:var(--radius-sm);border:1px solid var(--border-soft);background:#fcfbf8;font-size:.8rem;color:var(--text-main);min-width:0}
+    .input::placeholder{color:var(--text-soft)}
+    .select{padding:.45rem .7rem;border-radius:var(--radius-sm);border:1px solid var(--border-soft);background:#fcfbf8;font-size:.8rem;color:var(--text-main);}
+
+    /* Avatar */
+    .avatar{width:32px;height:32px;border-radius:999px;background:#ddd;overflow:hidden}
+
+    .pagination{display:flex;justify-content:flex-end;gap:.4rem;margin-top:.75rem;font-size:.75rem}
+    .page-btn{padding:.35rem .7rem;border-radius:999px;border:1px solid var(--border-soft);background:#fcfbf8;color:var(--text-soft)}
+    .page-btn.active{background:var(--accent);border-color:var(--accent);color:#111}
+
+    /* Profile */
+    .profile-layout{display:grid;grid-template-columns:260px minmax(0,1fr);gap:1.4rem}
+    .profile-photo{border-radius:var(--radius-lg);overflow:hidden;background:#ddd;height:260px}
+    .profile-photo img{width:100%;height:100%;object-fit:cover}
+    .profile-gallery{display:flex;gap:.4rem;margin-top:.5rem}
+    .profile-gallery img{width:72px;height:72px;border-radius:var(--radius-sm);object-fit:cover}
+    .profile-section-title{font-size:.85rem;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.12em;margin-bottom:.6rem}
+    .profile-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+    .profile-field-label{font-size:.75rem;color:var(--text-soft);text-transform:uppercase;letter-spacing:.12em}
+    .profile-field-value{font-size:.9rem;color:var(--text-main)}
+    .notes{margin-top:1rem}
+    .notes textarea{width:100%;min-height:80px;border-radius:var(--radius-sm);border:1px solid var(--border-soft);padding:.6rem .7rem;font-size:.8rem;background:#fcfbf8}
+
+    .actions-row{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:1rem}
+
+    /* Castings */
+    .casting-list{margin-top:1rem}
+    .casting-card{border-radius:var(--radius-md);border:1px solid var(--border-soft);background:var(--bg-card);padding:1rem 1.1rem;margin-bottom:.75rem;display:flex;justify-content:space-between;gap:1rem;align-items:flex-start}
+    .casting-title{font-size:.95rem;font-weight:600}
+    .casting-meta{font-size:.8rem;color:var(--text-soft)}
+    .casting-meta span{margin-right:.8rem}
+    .casting-status{font-size:.75rem;color:var(--text-muted)}
+
+    .casting-detail{margin-top:1.5rem}
+    .casting-detail-header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:.75rem}
+
+    .model-list{margin-top:.75rem}
+    .model-row{display:grid;grid-template-columns:1.5fr 1fr 1fr auto;gap:.75rem;padding:.6rem .75rem;border-radius:var(--radius-sm);background:#fcfbf8;margin-bottom:.3rem;align-items:center}
+    .model-row-name{font-size:.85rem;font-weight:500}
+
+    /* Settings */
+    .settings-grid{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:1.5rem}
+    .settings-section-title{font-size:.9rem;font-weight:600;margin-bottom:.5rem;color:var(--text-main)}
+    .settings-list{margin-top:.75rem}
+    .settings-list-item{display:flex;justify-content:space-between;align-items:center;padding:.5rem 0;border-bottom:1px solid var(--border-soft);font-size:.8rem}
+    .toggle{width:34px;height:18px;border-radius:999px;background:#ccc;position:relative;cursor:pointer;transition:background var(--transition)}
+    .toggle-knob{position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:999px;background:#fff;transition:transform var(--transition)}
+    .toggle.on{background:var(--accent)}
+    .toggle.on .toggle-knob{transform:translateX(16px)}
+
+    /* Toasts */
+    .toast-container{position:fixed;bottom:1.4rem;right:1.4rem;z-index:50;display:flex;flex-direction:column;gap:.5rem}
+    .toast{min-width:220px;max-width:260px;border-radius:var(--radius-md);padding:.7rem .85rem;box-shadow:var(--shadow-card);font-size:.8rem;display:flex;gap:.6rem;align-items:flex-start;border-left:3px solid var(--accent);background:var(--bg-card)}
+    .toast-success{border-left-color:var(--success)}
+    .toast-error{border-left-color:var(--danger)}
+    .toast-info{border-left-color:var(--info)}
+    .toast-icon{font-size:1rem}
+    .toast-body{flex:1}
+    .toast-title{font-weight:600;margin-bottom:.15rem;font-size:.8rem}
+    .toast-message{color:var(--text-muted)}
+
+    /* Login */
+    .login-wrapper{display:flex;align-items:center;justify-content:center;width:100%;min-height:100vh;background:radial-gradient(circle at top, rgba(201,168,76,.12), transparent 55%), #0f0f0f;color:#fff}
+    .login-card{width:min(380px, calc(100% - 2rem));background:#151515;border-radius:var(--radius-lg);padding:2rem 2.2rem;border:1px solid rgba(255,255,255,.08);box-shadow:0 24px 60px rgba(0,0,0,.65)}
+    .login-logo{font-weight:600;letter-spacing:.18em;text-transform:uppercase;font-size:.86rem;margin-bottom:.2rem}
+    .login-sub{font-size:.75rem;color:rgba(255,255,255,.5);margin-bottom:1.5rem}
+    .login-title{font-size:1.3rem;font-weight:600;margin-bottom:.75rem}
+    .login-field{margin-bottom:.85rem}
+    .login-label{font-size:.72rem;text-transform:uppercase;letter-spacing:.14em;color:rgba(255,255,255,.6);margin-bottom:.2rem}
+    .login-input{width:100%;padding:.5rem .7rem;border-radius:var(--radius-sm);border:1px solid rgba(255,255,255,.18);background:#101010;color:#fff;font-size:.8rem}
+    .login-input::placeholder{color:rgba(255,255,255,.4)}
+    .login-meta{font-size:.7rem;color:rgba(255,255,255,.5);margin-top:1rem}
+
+    .hidden{display:none !important}
+
+    /* Responsive */
+    @media(max-width:960px){
+      .grid-4{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .profile-layout{grid-template-columns:1fr}
+      .settings-grid{grid-template-columns:1fr}
+    }
+    @media(max-width:768px){
+      .sidebar{position:fixed;left:-260px;top:0;bottom:0;transition:left var(--transition)}
+      .sidebar.open{left:0}
+      .sidebar-toggle{display:flex}
+      .topbar{padding-left:3rem}
+      .content{padding:1.1rem}
+      .grid-4{grid-template-columns:1fr 1fr}
+      .model-row{grid-template-columns:1.7fr 1fr auto;gap:.6rem}
+    }
+    @media(max-width:520px){
+      .grid-4{grid-template-columns:1fr}
+      .model-row{grid-template-columns:1.8fr auto;gap:.5rem}
+      .profile-row{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+<div id="app">
+  <!-- Login screen -->
+  <div id="loginScreen" class="login-wrapper">
+    <div class="login-card">
+      <div class="login-logo">NHC MODEL</div>
+      <div class="login-sub">CRM interno · acesso restrito</div>
+      <div class="login-title">Entrar</div>
+      <div class="login-field">
+        <label class="login-label" for="loginEmail">E-mail</label>
+        <input id="loginEmail" type="email" class="login-input" placeholder="admin@nhcmodel.com.br" />
+      </div>
+      <div class="login-field">
+        <label class="login-label" for="loginPassword">Senha</label>
+        <input id="loginPassword" type="password" class="login-input" placeholder="••••••••" />
+      </div>
+      <button id="loginButton" class="btn btn-primary" style="width:100%;margin-top:.5rem">Entrar</button>
+      <div class="login-meta">Demo: admin@nhcmodel.com.br · nhc2025</div>
+    </div>
+  </div>
+
+  <!-- Main app -->
+  <div id="crmLayout" class="layout hidden">
+    <aside class="sidebar" id="sidebar">
+      <button class="sidebar-toggle" id="sidebarToggle" aria-label="Abrir menu">☰</button>
+      <div class="sidebar-header">
+        <div>
+          <div class="sidebar-logo">NHC MODEL</div>
+          <div class="sidebar-env">app.nhcmodel.com.br</div>
+        </div>
+      </div>
+      <nav class="sidebar-nav" aria-label="Navegação principal">
+        <div class="nav-section-label">Visão geral</div>
+        <button class="nav-link active" data-page="dashboard">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 13h8V3H3v10Zm10 8h8V11h-8v10Z"/></svg>
+          <span>Dashboard</span>
+        </button>
+        <button class="nav-link" data-page="models">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 4a3 3 0 1 1-4 2.999A3 3 0 0 1 7 4Zm0 7C4.791 11 2 12.119 2 14.5V17h6v-2.5C8 12.119 5.209 11 3 11Zm10-7a3 3 0 1 1-4 2.999A3 3 0 0 1 13 4Zm0 7c-2.209 0-5 1.119-5 3.5V17h10v-2.5c0-2.381-2.791-3.5-5-3.5Z"/></svg>
+          <span>Modelos</span>
+        </button>
+        <button class="nav-link" data-page="castings">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4h7v5H4V4Zm0 7h7v9H4v-9Zm9 0h7v9h-7v-9Zm0-7h7v5h-7V4Z"/></svg>
+          <span>Castings</span>
+        </button>
+        <button class="nav-link" data-page="settings">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10.325 4.317a1 1 0 0 1 .874-.509h1.602a1 1 0 0 1 .874.509l.773 1.357a1 1 0 0 0 .84.494l1.557.07a1 1 0 0 1 .912.74l.429 1.556a1 1 0 0 1-.272.98l-1.126 1.08a1 1 0 0 0-.302.912l.193 1.567a1 1 0 0 1-.577 1.018l-1.448.674a1 1 0 0 0-.61.79l-.207 1.56a1 1 0 0 1-.987.882h-1.6a1 1 0 0 1-.987-.882l-.207-1.56a1 1 0 0 0-.61-.79l-1.448-.674a1 1 0 0 1-.577-1.018l.193-1.567a1 1 0 0 0-.302-.912L5.58 11.624a1 1 0 0 1-.272-.98l.429-1.556a1 1 0 0 1 .912-.74l1.557-.07a1 1 0 0 0 .84-.494l.773-1.357Z"/><circle cx="12" cy="12" r="3"/></svg>
+          <span>Configurações</span>
+        </button>
+      </nav>
+      <div class="sidebar-footer">
+        <span>Usuário: <strong id="userNameLabel">Admin</strong></span>
+        <span>Versão: 0.1 · Demo</span>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="topbar-title">Olá, <strong id="topbarUser">Admin</strong></div>
+        <div class="topbar-meta">
+          <span id="topbarDate">Data</span>
+          <span>CRM interno NHC Model</span>
+        </div>
+      </header>
+      <section class="content">
+        <!-- Dashboard -->
+        <section id="page-dashboard" class="page active">
+          <div class="page-header">
+            <div>
+              <h2 class="page-title">Dashboard</h2>
+              <p class="page-sub">Visão rápida dos cadastros e castings em andamento.</p>
+            </div>
+          </div>
+          <div class="grid-4">
+            <div class="card">
+              <div class="metric-label">Total de modelos</div>
+              <div class="metric-value" id="metricTotalModels">0</div>
+              <div class="metric-meta">Inclui ativos e inativos.</div>
+            </div>
+            <div class="card">
+              <div class="metric-label">Novos este mês</div>
+              <div class="metric-value" id="metricNewMonth">0</div>
+              <div class="metric-meta">Cadastros com status "Novo".</div>
+            </div>
+            <div class="card">
+              <div class="metric-label">Castings abertos</div>
+              <div class="metric-value" id="metricOpenCastings">0</div>
+              <div class="metric-meta">Com status "Aberto".</div>
+            </div>
+            <div class="card">
+              <div class="metric-label">Pendentes de aprovação</div>
+              <div class="metric-value" id="metricPending">0</div>
+              <div class="metric-meta">Modelos ainda não aprovados.</div>
+            </div>
+          </div>
+
+          <div class="table-wrapper">
+            <div class="table-header">
+              <div class="table-header-title">Últimos cadastros</div>
+            </div>
+            <table aria-label="Últimos cadastros">
+              <thead>
+                <tr><th>Nome</th><th>Cidade</th><th>Status</th><th>Data</th></tr>
+              </thead>
+              <tbody id="latestTableBody"></tbody>
+            </table>
+          </div>
+
+          <div class="chart">
+            <div class="table-header-title" style="margin-bottom:.2rem">Cadastros por mês</div>
+            <div class="chart-bars" id="chartBars"></div>
+          </div>
+        </section>
+
+        <!-- Models list -->
+        <section id="page-models" class="page">
+          <div class="page-header">
+            <div>
+              <h2 class="page-title">Modelos</h2>
+              <p class="page-sub">Lista geral de candidatos e modelos ativos.</p>
+            </div>
+            <div>
+              <button class="btn btn-primary" id="btnNewModel">+ Novo Modelo</button>
+            </div>
+          </div>
+          <div class="filters">
+            <input id="filterName" class="input" type="text" placeholder="Buscar por nome" />
+            <select id="filterType" class="select">
+              <option value="">Tipo</option>
+              <option value="Feminino">Feminino</option>
+              <option value="Masculino">Masculino</option>
+              <option value="Infantil">Infantil</option>
+            </select>
+            <select id="filterStatus" class="select">
+              <option value="">Status</option>
+              <option value="Novo">Novo</option>
+              <option value="Ativo">Ativo</option>
+              <option value="Inativo">Inativo</option>
+              <option value="Reprovado">Reprovado</option>
+            </select>
+            <input id="filterCity" class="input" type="text" placeholder="Cidade" />
+          </div>
+
+          <div class="table-wrapper">
+            <div class="table-header">
+              <div class="table-header-title">Modelos cadastrados</div>
+            </div>
+            <table aria-label="Modelos">
+              <thead>
+                <tr>
+                  <th>Foto</th><th>Nome</th><th>Cidade</th><th>Tipo</th><th>Status</th><th>Data</th><th>Ações</th>
+                </tr>
+              </thead>
+              <tbody id="modelsTableBody"></tbody>
+            </table>
+          </div>
+          <div class="pagination" id="pagination"></div>
+        </section>
+
+        <!-- Profile -->
+        <section id="page-profile" class="page">
+          <div class="page-header">
+            <div>
+              <h2 class="page-title" id="profileTitle">Perfil do modelo</h2>
+              <p class="page-sub" id="profileSubtitle">Detalhes completos.</p>
+            </div>
+          </div>
+
+          <div class="profile-layout">
+            <div>
+              <div class="profile-photo" id="profilePhoto"></div>
+              <div class="profile-gallery" id="profileGallery"></div>
+            </div>
+            <div>
+              <div class="card">
+                <div class="profile-section-title">Dados pessoais</div>
+                <div class="profile-row" id="profilePersonal"></div>
+                <div class="section-divider" style="margin:1rem 0;border-top:1px solid var(--border-soft)"></div>
+                <div class="profile-section-title">Medidas</div>
+                <div class="profile-row" id="profileMeasures"></div>
+                <div class="section-divider" style="margin:1rem 0;border-top:1px solid var(--border-soft)"></div>
+                <div class="profile-section-title">Histórico de trabalhos</div>
+                <div id="profileJobs" style="font-size:.8rem;color:var(--text-muted)"></div>
+              </div>
+              <div class="card" style="margin-top:1rem">
+                <div class="profile-section-title">Documentos & Dropbox</div>
+                <p style="font-size:.8rem;color:var(--text-muted);margin-bottom:.5rem">Arquivos organizados na estrutura oficial da NHC Model.</p>
+                <button class="btn btn-ghost btn-icon" id="btnDropbox"><span>Ver no Dropbox</span></button>
+                <div class="notes">
+                  <div class="profile-section-title" style="margin-top:1rem">Notas internas</div>
+                  <textarea id="profileNotes" placeholder="Notas visíveis apenas para a equipe interna."></textarea>
+                </div>
+                <div class="actions-row">
+                  <button class="btn btn-primary" id="btnApprove">Aprovar</button>
+                  <button class="btn btn-ghost" id="btnInactivate">Inativar</button>
+                  <button class="btn btn-ghost" id="btnEdit">Editar</button>
+                  <button class="btn btn-ghost" id="btnDelete" style="color:var(--danger);border-color:#f5c6cb">Excluir</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Castings -->
+        <section id="page-castings" class="page">
+          <div class="page-header">
+            <div>
+              <h2 class="page-title">Castings</h2>
+              <p class="page-sub">Oportunidades abertas e modelos inscritos.</p>
+            </div>
+            <div>
+              <button class="btn btn-primary" id="btnNewCasting">+ Novo Casting</button>
+            </div>
+          </div>
+          <div class="casting-list" id="castingList"></div>
+          <div class="casting-detail hidden" id="castingDetail">
+            <div class="casting-detail-header">
+              <div>
+                <div class="profile-section-title">Modelos inscritos</div>
+              </div>
+              <button class="btn btn-ghost" id="btnCloseCastingDetail">Fechar</button>
+            </div>
+            <div class="model-list" id="castingModels"></div>
+          </div>
+        </section>
+
+        <!-- Settings -->
+        <section id="page-settings" class="page">
+          <div class="page-header">
+            <div>
+              <h2 class="page-title">Configurações</h2>
+              <p class="page-sub">Usuários, Dropbox e notificações.</p>
+            </div>
+          </div>
+          <div class="settings-grid">
+            <div>
+              <div class="settings-section-title">Usuários do sistema</div>
+              <div class="card">
+                <div class="settings-list" id="userList"></div>
+              </div>
+            </div>
+            <div class="row-2">
+              <div>
+                <div class="settings-section-title">Integração Dropbox</div>
+                <div class="card">
+                  <p style="font-size:.8rem;color:var(--text-muted);margin-bottom:.6rem">Token da API oficial da Dropbox:</p>
+                  <input id="dropboxToken" class="input" type="password" placeholder="Insira o token da API" style="width:100%;margin-bottom:.7rem" />
+                  <p style="font-size:.75rem;color:var(--text-soft)">Estrutura sugerida de pastas:</p>
+                  <pre style="font-size:.75rem;color:var(--text-soft);background:#fcfbf8;padding:.6rem;border-radius:var(--radius-sm);margin-top:.4rem;border:1px dashed var(--border-soft)">NHC Model/
+├── Candidatos/
+│   └── Nome - ID/
+│       ├── fotos/
+│       ├── videos/
+│       └── documentos/
+├── Modelos Aprovados/
+└── Castings/
+    └── Nome do Casting/</pre>
+                </div>
+              </div>
+              <div>
+                <div class="settings-section-title">Notificações</div>
+                <div class="card">
+                  <div class="settings-list">
+                    <div class="settings-list-item">
+                      <span>Novo cadastro de modelo</span>
+                      <div class="toggle" id="toggleNewModel"><div class="toggle-knob"></div></div>
+                    </div>
+                    <div class="settings-list-item">
+                      <span>Novo casting criado</span>
+                      <div class="toggle" id="toggleNewCasting"><div class="toggle-knob"></div></div>
+                    </div>
+                    <div class="settings-list-item">
+                      <span>Modelo aprovado</span>
+                      <div class="toggle" id="toggleModelApproved"><div class="toggle-knob"></div></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <!-- Modals -->
+  <div id="modalOverlay" class="hidden" style="position:fixed;inset:0;background:rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;z-index:40">
+    <div id="modalCard" class="card" style="width:min(420px,calc(100% - 2rem));max-height:80vh;overflow:auto">
+      <div id="modalTitle" class="page-title" style="font-size:1rem;margin-bottom:.4rem">Modal</div>
+      <p id="modalDescription" class="page-sub" style="margin-bottom:1rem;font-size:.85rem"></p>
+      <div id="modalContent"></div>
+      <div style="display:flex;justify-content:flex-end;gap:.5rem;margin-top:1rem">
+        <button class="btn btn-ghost" id="modalCancel">Cancelar</button>
+        <button class="btn btn-primary" id="modalConfirm">Salvar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toasts -->
+  <div class="toast-container" id="toastContainer"></div>
+</div>
+
+<script>
+  const demoEmail = 'admin@nhcmodel.com.br';
+  const demoPassword = 'nhc2025';
+
+  const models = [
+    { id: 1, name: 'Ana Luiza', city: 'Porto Alegre', type: 'Feminino', status: 'Novo', createdAt: '2026-06-10', avatar: '', instagram: '@analuiza', birth: '2002-05-14', phone: '(51) 99999-0001', email: 'ana.luiza@example.com', measures: {height: '175', weight: '56', manequim: '36', shoe: '37', eyes: 'Castanhos', hair: 'Castanhos'}, jobs: ['Campanha Havaianas Verão 2026'], dropboxPath: 'NHC Model/Modelos Aprovados/Ana Luiza', notes: '' },
+    { id: 2, name: 'Carlos Mendes', city: 'Novo Hamburgo', type: 'Masculino', status: 'Ativo', createdAt: '2026-05-22', avatar: '', instagram: '@carlosm', birth: '1998-11-02', phone: '(51) 99999-0002', email: 'carlos.mendes@example.com', measures: {height: '182', weight: '78', manequim: '40', shoe: '42', eyes: 'Verdes', hair: 'Castanhos'}, jobs: ['Unimed Vale dos Sinos · Institucional', 'Fruki · Verão'], dropboxPath: 'NHC Model/Modelos Aprovados/Carlos Mendes', notes: '' },
+    { id: 3, name: 'Beatriz Souza', city: 'São Leopoldo', type: 'Feminino', status: 'Ativo', createdAt: '2026-06-01', avatar: '', instagram: '@beatrizs', birth: '2000-08-21', phone: '(51) 99999-0003', email: 'beatriz.souza@example.com', measures: {height: '173', weight: '58', manequim: '38', shoe: '38', eyes: 'Mel', hair: 'Castanhos'}, jobs: ['Michele Tricot · Catálogo'], dropboxPath: 'NHC Model/Modelos Aprovados/Beatriz Souza', notes: '' },
+    { id: 4, name: 'Rafael Lima', city: 'Caxias do Sul', type: 'Masculino', status: 'Inativo', createdAt: '2026-03-15', avatar: '', instagram: '@rafaellima', birth: '1995-01-09', phone: '(54) 99999-0004', email: 'rafael.lima@example.com', measures: {height: '185', weight: '80', manequim: '42', shoe: '43', eyes: 'Pretos', hair: 'Pretos'}, jobs: ['Rider · Campanha RS'], dropboxPath: 'NHC Model/Modelos Aprovados/Rafael Lima', notes: '' },
+    { id: 5, name: 'Julia Costa', city: 'Porto Alegre', type: 'Feminino', status: 'Novo', createdAt: '2026-06-18', avatar: '', instagram: '@juliacosta', birth: '2004-03-29', phone: '(51) 99999-0005', email: 'julia.costa@example.com', measures: {height: '170', weight: '54', manequim: '36', shoe: '36', eyes: 'Azuis', hair: 'Loiros'}, jobs: [], dropboxPath: 'NHC Model/Candidatos/Julia Costa', notes: '' },
+    { id: 6, name: 'Pedro Alves', city: 'Santa Maria', type: 'Masculino', status: 'Reprovado', createdAt: '2026-02-05', avatar: '', instagram: '@pedroalves', birth: '2001-12-11', phone: '(55) 99999-0006', email: 'pedro.alves@example.com', measures: {height: '176', weight: '75', manequim: '40', shoe: '41', eyes: 'Castanhos', hair: 'Loiros'}, jobs: [], dropboxPath: 'NHC Model/Candidatos/Pedro Alves', notes: 'Perfil não alinhado com a demanda atual.' },
+    { id: 7, name: 'Marina Freitas', city: 'Campo Bom', type: 'Feminino', status: 'Ativo', createdAt: '2026-04-10', avatar: '', instagram: '@marinafreitas', birth: '1999-07-01', phone: '(51) 99999-0007', email: 'marina.freitas@example.com', measures: {height: '172', weight: '57', manequim: '36', shoe: '37', eyes: 'Castanhos', hair: 'Castanhos'}, jobs: ['Carícia Malhas · Catálogo', 'Omni · Campanha digital'], dropboxPath: 'NHC Model/Modelos Aprovados/Marina Freitas', notes: '' },
+    { id: 8, name: 'Lucas Ribeiro', city: 'Gramado', type: 'Masculino', status: 'Ativo', createdAt: '2026-05-02', avatar: '', instagram: '@lucasribeiro', birth: '1997-02-13', phone: '(54) 99999-0008', email: 'lucas.ribeiro@example.com', measures: {height: '180', weight: '77', manequim: '40', shoe: '42', eyes: 'Verdes', hair: 'Castanhos'}, jobs: ['Hernán Eyewear · Lookbook'], dropboxPath: 'NHC Model/Modelos Aprovados/Lucas Ribeiro', notes: '' },
+    { id: 9, name: 'Sofia Almeida', city: 'Porto Alegre', type: 'Infantil', status: 'Novo', createdAt: '2026-06-20', avatar: '', instagram: '@sofiaalmeida', birth: '2015-10-02', phone: '(51) 99999-0009', email: 'sofia.almeida@example.com', measures: {height: '145', weight: '40', manequim: '12', shoe: '34', eyes: 'Castanhos', hair: 'Castanhos'}, jobs: [], dropboxPath: 'NHC Model/Candidatos/Sofia Almeida', notes: '' },
+    { id: 10, name: 'Miguel Rocha', city: 'São Leopoldo', type: 'Infantil', status: 'Ativo', createdAt: '2026-01-22', avatar: '', instagram: '@miguelrocha', birth: '2014-06-18', phone: '(51) 99999-0010', email: 'miguel.rocha@example.com', measures: {height: '140', weight: '38', manequim: '10', shoe: '33', eyes: 'Castanhos', hair: 'Castanhos'}, jobs: ['Fruki · Campanha família'], dropboxPath: 'NHC Model/Modelos Aprovados/Miguel Rocha', notes: '' }
+  ];
+
+  const castings = [
+    { id: 1, title: 'Campanha Havaianas Verão', brand: 'Havaianas', date: '2026-07-15', slots: 8, status: 'Aberto', models: [1,3,7] },
+    { id: 2, title: 'Institucional Unimed Vale dos Sinos', brand: 'Unimed Vale dos Sinos', date: '2026-08-02', slots: 4, status: 'Aberto', models: [2,5] },
+    { id: 3, title: 'Catálogo Michele Tricot Inverno', brand: 'Michele Tricot', date: '2026-06-05', slots: 6, status: 'Encerrado', models: [3,7] }
+  ];
+
+  const users = [
+    { id: 1, name: 'Admin', email: 'admin@nhcmodel.com.br', role: 'admin' },
+    { id: 2, name: 'Produção', email: 'producao@nhcmodel.com.br', role: 'editor' },
+    { id: 3, name: 'Castings', email: 'castings@nhcmodel.com.br', role: 'editor' }
+  ];
+
+  // Helpers
+  function formatDate(iso){
+    const d = new Date(iso);
+    return d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'});
+  }
+
+  function showToast(type,title,message){
+    const container = document.getElementById('toastContainer');
+    const toast = document.createElement('div');
+    toast.className = 'toast toast-' + type;
+    const icon = document.createElement('div');
+    icon.className = 'toast-icon';
+    icon.textContent = type === 'success' ? '✓' : type === 'error' ? '!' : 'ℹ';
+    const body = document.createElement('div');
+    body.className = 'toast-body';
+    const t = document.createElement('div');
+    t.className = 'toast-title';
+    t.textContent = title;
+    const m = document.createElement('div');
+    m.className = 'toast-message';
+    m.textContent = message;
+    body.appendChild(t); body.appendChild(m);
+    toast.appendChild(icon); toast.appendChild(body);
+    container.appendChild(toast);
+    setTimeout(()=>{toast.style.opacity='0';toast.style.transform='translateY(6px)';},2500);
+    setTimeout(()=>{toast.remove();},3000);
+  }
+
+  // Login
+  const loginButton = document.getElementById('loginButton');
+  loginButton.addEventListener('click', ()=>{
+    const email = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value.trim();
+    if(email === demoEmail && password === demoPassword){
+      document.getElementById('loginScreen').classList.add('hidden');
+      document.getElementById('crmLayout').classList.remove('hidden');
+      document.getElementById('topbarUser').textContent = 'Admin';
+      document.getElementById('userNameLabel').textContent = 'Admin';
+      const now = new Date();
+      document.getElementById('topbarDate').textContent = now.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'2-digit',year:'numeric'});
+      showToast('success','Login realizado','Bem-vindo ao CRM da NHC Model.');
+      renderDashboard();
+      renderModels();
+      renderCastings();
+      renderSettings();
+    }else{
+      showToast('error','Credenciais inválidas','Confira e-mail e senha da demo.');
+    }
+  });
+
+  // Sidebar nav
+  document.querySelectorAll('.nav-link').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.querySelectorAll('.nav-link').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      const page = btn.dataset.page;
+      document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+      document.getElementById('page-' + page).classList.add('active');
+    });
+  });
+
+  // Sidebar toggle mobile
+  const sidebarToggle = document.getElementById('sidebarToggle');
+  const sidebar = document.getElementById('sidebar');
+  sidebarToggle.addEventListener('click', ()=>{
+    sidebar.classList.toggle('open');
+  });
+
+  // Dashboard
+  function renderDashboard(){
+    document.getElementById('metricTotalModels').textContent = models.length;
+    const now = new Date();
+    const month = now.getMonth();
+    const year = now.getFullYear();
+    const newMonth = models.filter(m=>{
+      const d = new Date(m.createdAt);
+      return d.getMonth()===month && d.getFullYear()===year && m.status==='Novo';
+    }).length;
+    document.getElementById('metricNewMonth').textContent = newMonth;
+    const openCastings = castings.filter(c=>c.status==='Aberto').length;
+    document.getElementById('metricOpenCastings').textContent = openCastings;
+    const pending = models.filter(m=>m.status==='Novo').length;
+    document.getElementById('metricPending').textContent = pending;
+
+    const latest = [...models].sort((a,b)=> new Date(b.createdAt)-new Date(a.createdAt)).slice(0,5);
+    const tbody = document.getElementById('latestTableBody');
+    tbody.innerHTML = '';
+    latest.forEach(m=>{
+      const tr = document.createElement('tr');
+      const statusBadge = statusBadgeElement(m.status);
+      tr.innerHTML = `<td>${m.name}</td><td>${m.city}</td><td></td><td>${formatDate(m.createdAt)}</td>`;
+      tr.children[2].appendChild(statusBadge);
+      tbody.appendChild(tr);
+    });
+
+    const chartData = [
+      {month:'Jan',value:2},
+      {month:'Fev',value:1},
+      {month:'Mar',value:1},
+      {month:'Abr',value:1},
+      {month:'Mai',value:2},
+      {month:'Jun',value:3},
+      {month:'Jul',value:1},
+    ];
+    const chartBars = document.getElementById('chartBars');
+    chartBars.innerHTML = '';
+    const maxVal = Math.max(...chartData.map(d=>d.value));
+    chartData.forEach(d=>{
+      const bar = document.createElement('div');
+      bar.className = 'chart-bar';
+      const rect = document.createElement('div');
+      rect.className = 'chart-bar-rect';
+      rect.style.height = (d.value / maxVal * 100) + '%';
+      const label = document.createElement('div');
+      label.className = 'chart-bar-label';
+      label.textContent = d.month;
+      bar.appendChild(rect);bar.appendChild(label);
+      chartBars.appendChild(bar);
+    });
+  }
+
+  // Status badge helper
+  function statusBadgeElement(status){
+    const span = document.createElement('span');
+    span.className = 'badge ' + (status==='Novo' ? 'badge-new' : status==='Ativo' ? 'badge-active' : status==='Inativo' ? 'badge-inactive' : 'badge-rejected');
+    span.textContent = status;
+    return span;
+  }
+
+  // Models list
+  let currentPage = 1;
+  const pageSize = 5;
+
+  function applyFilters(){
+    const name = document.getElementById('filterName').value.trim().toLowerCase();
+    const type = document.getElementById('filterType').value;
+    const status = document.getElementById('filterStatus').value;
+    const city = document.getElementById('filterCity').value.trim().toLowerCase();
+    return models.filter(m=>{
+      if(name && !m.name.toLowerCase().includes(name)) return false;
+      if(type && m.type!==type) return false;
+      if(status && m.status!==status) return false;
+      if(city && !m.city.toLowerCase().includes(city)) return false;
+      return true;
+    });
+  }
+
+  function renderModels(){
+    const filtered = applyFilters();
+    const tbody = document.getElementById('modelsTableBody');
+    tbody.innerHTML='';
+    const start = (currentPage-1)*pageSize;
+    const pageItems = filtered.slice(start, start+pageSize);
+    pageItems.forEach(m=>{
+      const tr = document.createElement('tr');
+      const avatarTd = document.createElement('td');
+      const avatarDiv = document.createElement('div');
+      avatarDiv.className='avatar';
+      avatarTd.appendChild(avatarDiv);
+      const nameTd = document.createElement('td');nameTd.textContent=m.name;
+      const cityTd = document.createElement('td');cityTd.textContent=m.city;
+      const typeTd = document.createElement('td');typeTd.textContent=m.type;
+      const statusTd = document.createElement('td');statusTd.appendChild(statusBadgeElement(m.status));
+      const dateTd = document.createElement('td');dateTd.textContent=formatDate(m.createdAt);
+      const actionsTd = document.createElement('td');
+      const btnView = document.createElement('button');btnView.className='btn btn-ghost btn-icon';btnView.textContent='Ver';
+      btnView.addEventListener('click',()=>openProfile(m.id));
+      actionsTd.appendChild(btnView);
+      tr.appendChild(avatarTd);
+      tr.appendChild(nameTd);
+      tr.appendChild(cityTd);
+      tr.appendChild(typeTd);
+      tr.appendChild(statusTd);
+      tr.appendChild(dateTd);
+      tr.appendChild(actionsTd);
+      tbody.appendChild(tr);
+    });
+    const totalPages = Math.ceil(filtered.length/pageSize)||1;
+    const pagination = document.getElementById('pagination');
+    pagination.innerHTML='';
+    for(let i=1;i<=totalPages;i++){
+      const btn=document.createElement('button');btn.className='page-btn'+(i===currentPage?' active':'');btn.textContent=i;
+      btn.addEventListener('click',()=>{currentPage=i;renderModels();});
+      pagination.appendChild(btn);
+    }
+  }
+
+  document.getElementById('filterName').addEventListener('input',()=>{currentPage=1;renderModels();});
+  document.getElementById('filterType').addEventListener('change',()=>{currentPage=1;renderModels();});
+  document.getElementById('filterStatus').addEventListener('change',()=>{currentPage=1;renderModels();});
+  document.getElementById('filterCity').addEventListener('input',()=>{currentPage=1;renderModels();});
+
+  // Profile view
+  function openProfile(id){
+    const model = models.find(m=>m.id===id);
+    if(!model) return;
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+    document.getElementById('page-profile').classList.add('active');
+    document.querySelectorAll('.nav-link').forEach(b=>b.classList.remove('active'));
+    const profileTitle = document.getElementById('profileTitle');
+    profileTitle.textContent = model.name;
+    document.getElementById('profileSubtitle').textContent = `${model.type} · ${model.city}`;
+    const photoDiv = document.getElementById('profilePhoto');
+    photoDiv.innerHTML='';
+    const img = document.createElement('div');
+    img.style.width='100%';img.style.height='100%';img.style.background='linear-gradient(135deg,#c9a84c,#f5f0e5)';
+    photoDiv.appendChild(img);
+    const gallery = document.getElementById('profileGallery');
+    gallery.innerHTML='';
+    for(let i=0;i<3;i++){
+      const g = document.createElement('div');g.style.width='72px';g.style.height='72px';g.style.borderRadius='8px';g.style.background='#ddd';gallery.appendChild(g);
+    }
+    const personal = document.getElementById('profilePersonal');
+    personal.innerHTML='';
+    const fields = [
+      ['Nome completo',model.name],
+      ['Data nasc.',formatDate(model.birth)],
+      ['Cidade',model.city],
+      ['Telefone',model.phone],
+      ['E-mail',model.email],
+      ['Instagram',model.instagram]
+    ];
+    fields.forEach(f=>{
+      const div=document.createElement('div');
+      const l=document.createElement('div');l.className='profile-field-label';l.textContent=f[0];
+      const v=document.createElement('div');v.className='profile-field-value';v.textContent=f[1];
+      div.appendChild(l);div.appendChild(v);personal.appendChild(div);
+    });
+    const measures = document.getElementById('profileMeasures');
+    measures.innerHTML='';
+    const mf = model.measures;
+    const mFields = [
+      ['Altura (cm)',mf.height],
+      ['Peso (kg)',mf.weight],
+      ['Manequim',mf.manequim],
+      ['Sapato',mf.shoe],
+      ['Olhos',mf.eyes],
+      ['Cabelo',mf.hair]
+    ];
+    mFields.forEach(f=>{
+      const div=document.createElement('div');
+      const l=document.createElement('div');l.className='profile-field-label';l.textContent=f[0];
+      const v=document.createElement('div');v.className='profile-field-value';v.textContent=f[1];
+      div.appendChild(l);div.appendChild(v);measures.appendChild(div);
+    });
+    const jobsContainer = document.getElementById('profileJobs');
+    jobsContainer.innerHTML='';
+    if(model.jobs && model.jobs.length){
+      const ul=document.createElement('ul');ul.style.listStyle='disc';ul.style.marginLeft='1rem';
+      model.jobs.forEach(j=>{const li=document.createElement('li');li.textContent=j;ul.appendChild(li);});
+      jobsContainer.appendChild(ul);
+    }else{
+      jobsContainer.textContent='Nenhum trabalho registrado até o momento.';
+    }
+    document.getElementById('profileNotes').value = model.notes || '';
+
+    document.getElementById('btnDropbox').onclick = ()=>{
+      showToast('info','Dropbox','Abrindo pasta: ' + model.dropboxPath);
+    };
+    document.getElementById('btnApprove').onclick = ()=>{
+      model.status='Ativo';
+      showToast('success','Modelo aprovado',model.name + ' agora está como ativo.');
+      renderDashboard();renderModels();
+    };
+    document.getElementById('btnInactivate').onclick = ()=>{
+      model.status='Inativo';
+      showToast('info','Modelo inativado',model.name + ' foi marcado como inativo.');
+      renderDashboard();renderModels();
+    };
+    document.getElementById('btnEdit').onclick = ()=>{
+      showToast('info','Edição','Edição visual não implementada nesta demo.');
+    };
+    document.getElementById('btnDelete').onclick = ()=>{
+      showToast('error','Excluir','Exclusão simulada apenas para demonstração.');
+    };
+    document.getElementById('profileNotes').onchange = (e)=>{
+      model.notes = e.target.value;
+      showToast('success','Notas atualizadas','As notas internas foram salvas localmente.');
+    };
+  }
+
+  // Castings
+  function renderCastings(){
+    const list = document.getElementById('castingList');
+    list.innerHTML='';
+    castings.forEach(c=>{
+      const card=document.createElement('div');card.className='casting-card';
+      const left=document.createElement('div');
+      const title=document.createElement('div');title.className='casting-title';title.textContent=c.title;
+      const meta=document.createElement('div');meta.className='casting-meta';
+      meta.innerHTML = `<span>${c.brand}</span><span>${formatDate(c.date)}</span><span>${c.slots} vagas</span>`;
+      left.appendChild(title);left.appendChild(meta);
+      const right=document.createElement('div');
+      const status=document.createElement('div');status.className='casting-status';status.textContent='Status: ' + c.status;
+      const btn=document.createElement('button');btn.className='btn btn-ghost btn-icon';btn.textContent='Ver inscritos';
+      btn.addEventListener('click',()=>openCastingDetail(c.id));
+      right.appendChild(status);right.appendChild(btn);
+      card.appendChild(left);card.appendChild(right);
+      list.appendChild(card);
+    });
+  }
+
+  function openCastingDetail(id){
+    const casting = castings.find(c=>c.id===id);
+    if(!casting) return;
+    const detail = document.getElementById('castingDetail');
+    detail.classList.remove('hidden');
+    const list = document.getElementById('castingModels');
+    list.innerHTML='';
+    casting.models.forEach(mid=>{
+      const model=models.find(m=>m.id===mid);
+      if(!model) return;
+      const row=document.createElement('div');row.className='model-row';
+      const name=document.createElement('div');name.className='model-row-name';name.textContent=model.name;
+      const city=document.createElement('div');city.textContent=model.city;
+      const type=document.createElement('div');type.textContent=model.type;
+      const actions=document.createElement('div');actions.style.textAlign='right';
+      const btnApprove=document.createElement('button');btnApprove.className='btn btn-primary btn-icon';btnApprove.textContent='Aprovar';
+      const btnReject=document.createElement('button');btnReject.className='btn btn-ghost btn-icon';btnReject.textContent='Rejeitar';
+      btnApprove.addEventListener('click',()=>{
+        showToast('success','Aprovado para casting',model.name + ' confirmado em ' + casting.title);
+      });
+      btnReject.addEventListener('click',()=>{
+        showToast('error','Rejeitado no casting',model.name + ' removido de ' + casting.title);
+      });
+      actions.appendChild(btnApprove);actions.appendChild(btnReject);
+      row.appendChild(name);row.appendChild(city);row.appendChild(type);row.appendChild(actions);
+      list.appendChild(row);
+    });
+    document.getElementById('btnCloseCastingDetail').onclick = ()=>{
+      detail.classList.add('hidden');
+    };
+  }
+
+  // Settings
+  function renderSettings(){
+    const list=document.getElementById('userList');
+    list.innerHTML='';
+    users.forEach(u=>{
+      const item=document.createElement('div');item.className='settings-list-item';
+      const left=document.createElement('span');left.textContent=`${u.name} · ${u.email}`;
+      const right=document.createElement('span');right.textContent=u.role==='admin'?'Admin':'Editor';
+      item.appendChild(left);item.appendChild(right);list.appendChild(item);
+    });
+
+    function bindToggle(id){
+      const t=document.getElementById(id);
+      t.addEventListener('click',()=>{
+        t.classList.toggle('on');
+        showToast('success','Notificações atualizadas','Configuração de ' + id + ' salva localmente.');
+      });
+    }
+    bindToggle('toggleNewModel');
+    bindToggle('toggleNewCasting');
+    bindToggle('toggleModelApproved');
+  }
+
+  // New model modal (simple demo)
+  document.getElementById('btnNewModel').addEventListener('click',()=>{
+    openModal('Novo modelo','Cadastro rápido para demonstração.','<p style="font-size:.8rem;color:var(--text-muted)">Cadastro completo será implementado na versão produtiva. Nesta demo, apenas simulamos a ação.</p>');
+  });
+
+  document.getElementById('btnNewCasting').addEventListener('click',()=>{
+    openModal('Novo casting','Cadastro rápido de oportunidade.','<p style="font-size:.8rem;color:var(--text-muted)">Cadastro detalhado com vagas e perfil será implementado na versão produtiva. Nesta demo, apenas simulamos a ação.</p>');
+  });
+
+  function openModal(title,desc,innerHTML){
+    document.getElementById('modalTitle').textContent=title;
+    document.getElementById('modalDescription').textContent=desc;
+    document.getElementById('modalContent').innerHTML=innerHTML;
+    document.getElementById('modalOverlay').classList.remove('hidden');
+    document.getElementById('modalCancel').onclick=()=>closeModal();
+    document.getElementById('modalConfirm').onclick=()=>{
+      showToast('success','Ação registrada','A operação foi simulada com sucesso.');
+      closeModal();
+    };
+  }
+  function closeModal(){document.getElementById('modalOverlay').classList.add('hidden');}
+</script>
+</body>
+</html>
