@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NHC Studio — Dashboard</title>
+
+  <!-- Design System & Layout -->
+  <link rel="stylesheet" href="../assets/css/base.css">
+  <link rel="stylesheet" href="../assets/css/layout.css">
+
+  <!-- Componentes -->
+  <link rel="stylesheet" href="../assets/css/buttons.css">
+  <link rel="stylesheet" href="../assets/css/cards.css">
+  <link rel="stylesheet" href="../assets/css/badges.css">
+  <link rel="stylesheet" href="../assets/css/tables.css">
+  <link rel="stylesheet" href="../assets/css/modals.css">
+
+  <!-- Pagina -->
+  <link rel="stylesheet" href="../assets/css/dashboard.css">
+</head>
+<body class="page-dashboard">
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar__logo">
+      <span class="sidebar__logo-texto">NHC Studio</span>
+    </div>
+    <nav class="sidebar__nav">
+      <a href="#" class="sidebar__link sidebar__link--ativo">Dashboard</a>
+      <a href="#" class="sidebar__link">Modelos</a>
+      <a href="#" class="sidebar__link">Castings</a>
+      <a href="#" class="sidebar__link">Empresas</a>
+      <a href="#" class="sidebar__link">Agenda</a>
+    </nav>
+  </aside>
+
+  <!-- Conteudo principal -->
+  <div class="main-wrapper">
+
+    <!-- Topbar -->
+    <header class="topbar">
+      <button class="topbar__menu-toggle btn btn--icon" id="btn-menu" aria-label="Alternar menu">
+        ☰
+      </button>
+      <h1 class="topbar__titulo">Dashboard</h1>
+      <div class="topbar__usuario">
+        <span id="usuario-nome">Carregando...</span>
+        <a href="login.html" class="btn btn--ghost btn--sm">Sair</a>
+      </div>
+    </header>
+
+    <!-- Conteudo da pagina -->
+    <main class="main-content">
+
+      <!-- Grid de metricas -->
+      <!-- Preenchido dinamicamente por dashboardPage.js -->
+      <!-- TODO: dados viram de GET /api/dashboard/metricas -->
+      <section class="secao-metricas">
+        <h2 class="secao__titulo">Resumo</h2>
+        <div id="metricas-grid" class="metricas-grid">
+          <!-- Cards injetados via JS -->
+        </div>
+      </section>
+
+      <!-- Atividades recentes -->
+      <!-- TODO: dados viram de GET /api/dashboard/atividades -->
+      <section class="secao-atividades">
+        <h2 class="secao__titulo">Atividades Recentes</h2>
+        <ul id="atividades-lista" class="atividades-lista">
+          <!-- Itens injetados via JS -->
+        </ul>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Controller do dashboard -->
+  <!-- TODO: substituir dados mock por chamadas a API REST -->
+  <script type="module" src="../assets/js/ui/pages/dashboardPage.js"></script>
+
+</body>
+</html>
