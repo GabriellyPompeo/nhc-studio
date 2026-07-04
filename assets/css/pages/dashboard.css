@@ -1,0 +1,245 @@
+/* ============================================
+   NHC Studio — dashboard.css
+   Página: Dashboard principal do CRM
+   ============================================ */
+
+/* ── Seção de métricas ── */
+.dashboard-metrics {
+  margin-bottom: var(--space-xl);
+}
+
+.dashboard-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--space-md);
+}
+
+/* ── Seção de gráficos ── */
+.dashboard-charts {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: var(--space-md);
+  margin-bottom: var(--space-xl);
+}
+
+.chart-card {
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.chart-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-md) var(--space-lg);
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.chart-card-title {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text-main);
+}
+
+.chart-card-subtitle {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-subtle);
+}
+
+.chart-card-body {
+  padding: var(--space-lg);
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Placeholder do gráfico enquanto não há biblioteca real */
+.chart-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+  color: var(--color-text-subtle);
+  font-size: var(--font-size-sm);
+  width: 100%;
+}
+
+.chart-placeholder-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  height: 120px;
+  width: 100%;
+  padding: 0 var(--space-md);
+}
+
+.chart-bar {
+  flex: 1;
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  background: linear-gradient(180deg, var(--color-primary) 0%, rgba(243, 179, 116, 0.3) 100%);
+  transition: opacity var(--transition-fast);
+  min-height: 8px;
+}
+
+.chart-bar:hover {
+  opacity: 0.8;
+}
+
+/* Donut fake */
+.chart-donut {
+  width: 120px;
+  height: 120px;
+  border-radius: var(--radius-full);
+  background: conic-gradient(
+    var(--color-success) 0deg 144deg,
+    var(--color-warning) 144deg 216deg,
+    var(--color-danger) 216deg 252deg,
+    var(--color-accent) 252deg 360deg
+  );
+  position: relative;
+  margin: 0 auto;
+}
+
+.chart-donut::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 70px;
+  height: 70px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-bg-card);
+}
+
+/* ── Legenda do donut ── */
+.chart-legend {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
+}
+
+.chart-legend-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.chart-legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+}
+
+.chart-legend-value {
+  margin-left: auto;
+  font-weight: 600;
+  color: var(--color-text-main);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Seção inferior: atividades + atalhos ── */
+.dashboard-bottom {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+  margin-bottom: var(--space-xl);
+}
+
+/* ── Atividades recentes ── */
+.activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.activity-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-md);
+  padding: var(--space-md) 0;
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.activity-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.activity-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.activity-icon svg {
+  width: 15px;
+  height: 15px;
+}
+
+.activity-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.activity-text {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  line-height: 1.4;
+}
+
+.activity-text strong {
+  color: var(--color-text-main);
+  font-weight: 500;
+}
+
+.activity-time {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-subtle);
+  margin-top: 2px;
+}
+
+/* ── Atalhos rápidos ── */
+.shortcuts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-sm);
+}
+
+/* ── Responsivo ── */
+@media (max-width: 1200px) {
+  .dashboard-charts {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 900px) {
+  .dashboard-metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .dashboard-bottom {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .dashboard-metrics-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .shortcuts-grid {
+    grid-template-columns: 1fr;
+  }
+}
