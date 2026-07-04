@@ -1,0 +1,214 @@
+/* ============================================
+   NHC Studio — cards.css
+   Componente: Cards reutilizáveis
+   ============================================ */
+
+/* ── Card base ── */
+.card {
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.card:hover {
+  border-color: var(--color-border-medium);
+}
+
+.card-elevated {
+  background-color: var(--color-bg-elevated);
+  box-shadow: var(--shadow-card);
+}
+
+/* ── Card de métrica (dashboard) ── */
+.metric-card {
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  transition: all var(--transition-base);
+  cursor: default;
+}
+
+.metric-card:hover {
+  border-color: var(--color-border-medium);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-card);
+}
+
+.metric-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.metric-card-label {
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-subtle);
+}
+
+.metric-card-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.metric-card-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.metric-card-icon.primary {
+  background-color: var(--color-primary-soft);
+  color: var(--color-primary);
+}
+
+.metric-card-icon.accent {
+  background-color: var(--color-accent-soft);
+  color: var(--color-accent);
+}
+
+.metric-card-icon.success {
+  background-color: var(--color-success-soft);
+  color: var(--color-success);
+}
+
+.metric-card-icon.danger {
+  background-color: var(--color-danger-soft);
+  color: var(--color-danger);
+}
+
+.metric-card-icon.warning {
+  background-color: var(--color-warning-soft);
+  color: var(--color-warning);
+}
+
+.metric-card-value {
+  font-size: var(--font-size-2xl);
+  font-weight: 700;
+  color: var(--color-text-main);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.metric-card-footer {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-subtle);
+}
+
+.metric-card-trend {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: var(--radius-full);
+}
+
+.metric-card-trend.up {
+  color: var(--color-success);
+  background-color: var(--color-success-soft);
+}
+
+.metric-card-trend.down {
+  color: var(--color-danger);
+  background-color: var(--color-danger-soft);
+}
+
+/* ── Card de atalho rápido ── */
+.shortcut-card {
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  cursor: pointer;
+  text-decoration: none;
+  transition: all var(--transition-base);
+}
+
+.shortcut-card:hover {
+  border-color: var(--color-primary);
+  background-color: var(--color-primary-soft);
+  transform: translateY(-2px);
+}
+
+.shortcut-card-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  background-color: var(--color-primary-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary);
+}
+
+.shortcut-card-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.shortcut-card-title {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text-main);
+}
+
+.shortcut-card-desc {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+/* ── Card de conteúdo genérico ── */
+.content-card {
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.content-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-md) var(--space-lg);
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.content-card-title {
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  color: var(--color-text-main);
+}
+
+.content-card-body {
+  padding: var(--space-lg);
+}
+
+.content-card-footer {
+  padding: var(--space-md) var(--space-lg);
+  border-top: 1px solid var(--color-border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-sm);
+}
