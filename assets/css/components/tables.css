@@ -1,0 +1,249 @@
+/* ============================================
+   NHC Studio — tables.css
+   Componente: Tabelas premium com ordenação e paginação
+   ============================================ */
+
+/* ── Wrapper ── */
+.table-wrapper {
+  overflow-x: auto;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border-subtle);
+  background-color: var(--color-bg-card);
+}
+
+/* ── Tabela base ── */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-sm);
+}
+
+/* ── Header ── */
+.table thead th {
+  padding: 12px var(--space-md);
+  text-align: left;
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-subtle);
+  background-color: var(--color-bg-elevated);
+  border-bottom: 1px solid var(--color-border-subtle);
+  white-space: nowrap;
+  user-select: none;
+}
+
+.table thead th:first-child {
+  border-radius: var(--radius-lg) 0 0 0;
+}
+
+.table thead th:last-child {
+  border-radius: 0 var(--radius-lg) 0 0;
+}
+
+/* Colunas sortáveis */
+.table thead th.sortable {
+  cursor: pointer;
+}
+
+.table thead th.sortable:hover {
+  color: var(--color-text-muted);
+  background-color: var(--color-bg-hover);
+}
+
+.th-sort {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.th-sort-icon {
+  width: 12px;
+  height: 12px;
+  color: var(--color-text-subtle);
+  transition: color var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.sortable.asc .th-sort-icon,
+.sortable.desc .th-sort-icon {
+  color: var(--color-primary);
+}
+
+/* ── Body ── */
+.table tbody tr {
+  border-bottom: 1px solid var(--color-border-subtle);
+  transition: background-color var(--transition-fast);
+}
+
+.table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.table tbody tr:hover {
+  background-color: var(--color-bg-hover);
+}
+
+.table tbody td {
+  padding: 14px var(--space-md);
+  color: var(--color-text-muted);
+  vertical-align: middle;
+}
+
+.table tbody td.td-name {
+  font-weight: 500;
+  color: var(--color-text-main);
+}
+
+/* ── Foto do modelo na tabela ── */
+.table-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  object-fit: cover;
+  background-color: var(--color-primary-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary);
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.table-cell-user {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.table-cell-user-name {
+  font-weight: 500;
+  color: var(--color-text-main);
+  font-size: var(--font-size-sm);
+}
+
+.table-cell-user-sub {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-subtle);
+}
+
+/* ── Ações da tabela ── */
+.table-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.table tbody tr:hover .table-actions {
+  opacity: 1;
+}
+
+/* ── Estado vazio ── */
+.table-empty {
+  text-align: center;
+  padding: var(--space-3xl) var(--space-lg);
+  color: var(--color-text-subtle);
+}
+
+.table-empty-icon {
+  width: 48px;
+  height: 48px;
+  margin: 0 auto var(--space-md);
+  color: var(--color-text-subtle);
+  opacity: 0.5;
+}
+
+.table-empty-title {
+  font-size: var(--font-size-md);
+  font-weight: 500;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-xs);
+}
+
+.table-empty-desc {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-subtle);
+}
+
+/* ── Paginação ── */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-md) var(--space-lg);
+  border-top: 1px solid var(--color-border-subtle);
+  gap: var(--space-md);
+}
+
+.pagination-info {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-subtle);
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.pagination-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--color-text-muted);
+  background-color: transparent;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.pagination-btn:hover {
+  color: var(--color-text-main);
+  background-color: var(--color-bg-hover);
+  border-color: var(--color-border-subtle);
+}
+
+.pagination-btn.active {
+  color: var(--color-primary);
+  background-color: var(--color-primary-soft);
+  border-color: transparent;
+  font-weight: 600;
+}
+
+.pagination-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.pagination-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* ── Toolbar da tabela (busca + filtros) ── */
+.table-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding: var(--space-md) var(--space-lg);
+  border-bottom: 1px solid var(--color-border-subtle);
+  flex-wrap: wrap;
+}
+
+.table-toolbar-left,
+.table-toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
